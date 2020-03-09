@@ -1,163 +1,110 @@
 ﻿#include <iostream>
 #include <string>
 #include <iostream>
-#include <random>
-
-#include <time.h>
 
 #include "TesterA.h"
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-template <typename T> class Storage {
-private:
-	T* data;
-	size_t size;
+class StringNum {
 public:
-	Storage() {
-		data = nullptr;
-		size = 0;
-	};
-
-	void add(T e) {
-		T* ndata = new T[size + 1];
-		for (int i = 0; i < size; i++) {
-			ndata[i] = data[i];
-		}
-		ndata[size] = e;
-		delete[]data;
-		data = ndata;
-		size++;
+	string num="";
+	StringNum(string n) {
+		num = n;
+	}
+	StringNum(int n) {
+		num = to_string(n);
+	}
+	StringNum(const StringNum &other) {
+		this->num = other.num;
 	}
 
-	T get(size_t i) {
-		if (i < size)
-			return data[i];
-	}
+	StringNum operator *(const StringNum& other) {
+		StringNum res("0");
+		vector <string> nums;
 
-	size_t lenght() {
-		return size;
-	}
+		string mul_ed = num;
+		string mul_er = other.num;
+		reverse(mul_ed.begin(), mul_ed.end());
+		reverse(mul_er.begin(), mul_er.end());
 
-	void rev() {
-		T* ndata = new T[size];
-		for (int i = size-1; i >= 0; i--) {
-			ndata[size-1-i] = data[i];
-		}
-		delete[]data;
-		data = ndata;
-	}
-
-	void del(size_t e) {
-		if (e < size) {
-			T* ndata = new T[size-1];
-			for (int i = 0; i < e; i++) {
-				ndata[i] = data[i];
+		int rem = 0;
+		string r = "";
+		for (int i = 0; i < mul_er.size(); i++) {
+			for (int j = 0; j < mul_ed.size(); j++) {
+				rem = (mul_er[i] - '0') * (mul_ed[j] - '0') + rem;
+				r += to_string(rem % 10);
+				rem /= 10;
 			}
-			for (int i = e + 1; i < size; i++) {
-				ndata[i - 1] = data[i];
-			}
-			delete[]data;
-			data = ndata;
-			size--;
+			if (rem != 0)
+				r += to_string(rem);
+			reverse(r.begin(), r.end());
+			r += string(i, '0');
+			nums.push_back(r);
+			r = "";
+			rem = 0;
 		}
+		StringNum R("");
+		for (int i = 0; i < nums.size(); i++) {
+			R = R + StringNum(nums[i]);
+		}
+		return R.num;
+	}
+
+	StringNum operator + (const StringNum &other) {
+		StringNum res("");
+		string a = num;
+		string b = other.num;
+		string r;
+		int rem=0;
+
+		reverse(a.begin(), a.end());
+		reverse(b.begin(), b.end());
+
+		for (int i = 0; i <= max(a.size(), b.size()); i++) {
+			if (i < a.size() && i < b.size()) {
+				rem = rem + a[i] - '0' + b[i] - '0';
+				r += to_string(rem % 10);
+				rem = rem / 10;
+			}
+			else if (i < a.size()) {
+				rem = rem + a[i] - '0';
+				r += to_string(rem%10);
+				rem = rem / 10;
+			}
+			else if (i < b.size()) {
+				rem = rem + b[i] - '0';
+				r += to_string(rem % 10);
+				rem = rem / 10;
+			}
+			else if (rem > 0)
+				r += to_string(rem);
+		}
+		reverse(r.begin(), r.end());
+		res.num = r;
+		return res;
 	}
 };
 
-int* maxEl(int* matrix[]) {
-	int coor [2] = { 0,0 };
-	int m = 0;
-	for (int i = 0; i < 10; i++)
-		for (int j = 0; j < 10; j++)
-			if (matrix[i][j] > m) {
-				coor[0] = i;
-				coor[1] = j;
-				m = matrix[i][j];
-			}
-	return coor;
+string factorial(int fac) {
+	StringNum p(2);
+	if (fac == 1)
+		return "1";
+	if (fac == 2)
+		return "2";
+	for (int i = 3; i <= fac; i++) {
+		p = p * StringNum(to_string(i));
+	}
+	return p.num;
 }
 
 int main() {
-	int num = 0;
-	cout << "Input task: ";
-	cin >> num;
-	if (num == 1) {
-		Storage<int> storage;
-		string line;
-		cin.ignore();
-		cout << endl;
-		getline(cin, line);
-		string num;
-
-		for (int i = 0; i < line.length() + 1; i++) {
-			if (i == line.length() && num != "")
-				storage.add(stoi(num));
-			if (line[i] == ' ' && num != "") {
-				storage.add(stoi(num));
-				num = "";
-			}
-			else if (line[i] != ' ') {
-				num += line[i];
-			}
-		}
-
-		storage.rev();
-		size_t s = 1;
-		while (s < storage.lenght()) {
-			if (storage.get(s - 1) == storage.get(s))
-				storage.del(s);
-			else
-				s++;
-		}
-
-		for (int i = 0; i < storage.lenght(); i++) {
-			cout << storage.get(i) << " ";
-		}
-	}
-	if (num == 2) {
-		srand(time(0));
-		int* matrix[10];
-		for (int i = 0; i < 10; i++) {
-			matrix[i] = new int[10];
-			for (int j = 0; j < 10; j++)
-				matrix[i][j] = rand() % 1000;
-		}
-
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++)
-				cout << matrix[i][j] << " ";
-			cout << endl;
-		}
-
-		cout << endl;
-
-		for (int i = 0; i < 10; i++) {
-			int *coor = maxEl(matrix);
-			swap(matrix[i][i], matrix[coor[0]][coor[1]]);
-			for (int j = 0; j < 10; j++)
-				cout << matrix[i][j] << " ";
-			matrix[i][i] = 0;
-			cout << endl;
-		}
-
-	}
-	if (num == 3) {
-		srand(time(0));
-		int n;
-		cout << "Input n: "; cin >> n; 
-		vector<int> a;
-		int c;
-		for (int i = 0; i < 2 * n; i++) {
-			cin >> c;
-			a.push_back(c);
-		}
-		sort(a.begin(), a.end());
-		cout << endl;
-		for (int i = 0; i < a.size()/2; i++) {
-			cout << a[i] << " " << a[2*n-1-i];
-			cout << endl;
-		}
-	}
-	cout << endl;
-	main();
+	//string text = "asdas";
+	//text += string(3,'0');
+	//cout << text;
+	//StringNum C = StringNum(123456) * StringNum(7654);
+	//cout << C.num;
+	cout << factorial(3);
 	return 0;
 }
