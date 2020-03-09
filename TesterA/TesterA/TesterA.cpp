@@ -43,20 +43,21 @@ int main() {
 				cout << a[i] << " ";
 		break;
 		case(3):
-			int lo, hi, mid;
+			int lO, hi, mid;
+			//test
 			for (int i = 1; i < 10; i++) {
 				if (a[i - 1] > a[i]) {
 					x = a[i];
-					lo = 0;
+					lO = 0;
 					hi = i - 1;
 					do {
-						mid = (lo + hi) / 2;
-						if (a[mid] < x) lo = mid + 1;
+						mid = (lO + hi) / 2;
+						if (a[mid] < x) lO = mid + 1;
 						else  hi = mid - 1;
-					} while (lo <= hi);
-					for (short j = i - 1; j >= lo; j--)
+					} while (lO <= hi);
+					for (short j = i - 1; j >= lO; j--)
 						a[j + 1] = a[j];
-					a[lo] = x;
+					a[lO] = x;
 				}
 			}
 			for (int i = 0; i < 10; i++)
